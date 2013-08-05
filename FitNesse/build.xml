@@ -1,0 +1,65 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="FitNesse Test Sampler" default="acceptance_tests" basedir=".">
+
+	<property name="src" location="src" />
+	<property name="classes" location="classes" />
+	<property name="lib" location="lib" />
+	<property name="fitnesseRoot" value="FitNesseRoot" />
+
+	<property name="suite.name" value="YouShouldReplaceMeInBuildXml" />
+
+	<property name="fitnesse.standalone.filename" value="fitnesse-20130531-standalone.jar" />
+	<property name="fitnesse.standalone.jar" value="${lib}/${fitnesse.standalone.filename}" />
+
+	<target name="all" depends="build" description="Run this target any time you change code. It will clean, then compile the source." />
+
+	<target name="build" depends="clean, compile" description="clean, then compile the source" />
+
+	<target name="compile" depends="init,-define-paths" description="compile the source (make)">
+		<javac srcdir="${src}" destdir="${classes}" classpathref="compile.classpath" debug="true" source="1.7" target="1.7" />
+	</target>
+
+	<target name="clean" description="delete everything in the classes directory">
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+	</target>
+
+	<target name="acceptance_tests_xml" depends="compile">
+		<java jar="${fitnesse.standalone.jar}" failonerror="true" fork="true" output="fitnesse-results.xml">
+			<arg value="-c" />
+			<arg value="${suite.name}?suite&amp;format=xml" />
+			<arg value="-p" />
+			<arg value="9234" />
+		</java>
+	</target>
+
+	<target name="acceptance_tests" depends="compile">
+		<java jar="${fitnesse.standalone.jar}" failonerror="true" fork="true">
+			<arg value="-c" />
+			<arg value="${suite.name}?suite&amp;format=text" />
+			<arg value="-p" />
+			<arg value="9234" />
+		</java>
+	</target>
+	
+	<target name="-download-jars" if="ivy">
+		<ivy:retrieve />
+	</target>
+
+	<target name="-define-paths" depends="-download-jars">
+		<path id="compile.classpath">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="clean-deps" if="ivy" description="Delete all dependencies">
+		<delete>
+			<fileset dir="${basedir}/lib" includes="*.jar" excludes="${fitnesse.standalone.filename}" />
+		</delete>
+	</target>
+
+</project>
