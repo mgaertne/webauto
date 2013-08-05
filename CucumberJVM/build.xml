@@ -1,0 +1,69 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="CucumberJVM Test Sampler" default="cucumber" basedir=".">
+
+	<property name="src" location="src" />
+	<property name="classes" location="classes" />
+	<property name="lib" location="lib" />
+	<property name="reports" location="reports" />
+	
+	<target name="compile" depends="-define-paths">
+		<mkdir dir="${classes}" />
+		<javac srcdir="${src}" destdir="${classes}" classpathref="compile.classpath" encoding="UTF-8" source="1.7" target="1.7" />
+	</target>
+
+	<target name="cucumber" depends="compile" description="Run Cucumber">
+		<mkdir dir="${reports}" />
+
+		<java classname="cucumber.api.cli.Main" fork="true" failonerror="false" resultproperty="cucumber.exitstatus">
+			<classpath>
+				<path refid="compile.classpath" />
+				<pathelement location="${classes}" />
+			</classpath>
+			<arg value="--format" />
+			<arg value="junit:${reports}/junit-report.xml" />
+			<arg value="--format" />
+			<arg value="pretty" />
+			<arg value="--glue" />
+			<arg value="de.itagile.gluecode" />
+			<arg value="features" />
+		</java>
+
+		<junitreport todir="${reports}">
+			<fileset dir="${reports}">
+				<include name="junit-report.xml" />
+			</fileset>
+			<report format="frames" todir="${reports}" />
+		</junitreport>
+
+		<fail message="Cucumber failed">
+			<condition>
+				<not>
+					<equals arg1="${cucumber.exitstatus}" arg2="0" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="-download-jars" if="ivy">
+		<ivy:retrieve />
+	</target>
+
+	<target name="-define-paths" depends="-download-jars">
+		<path id="compile.classpath">
+			<fileset dir="${lib}">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="clean" description="Delete all generated artifacts">
+		<delete dir="${classes}" />
+		<delete dir="${reports}" />
+	</target>
+
+	<target name="clean-deps" if="ivy" description="Delete all dependencies">
+		<delete>
+			<fileset dir="${lib}" includes="*.jar" />
+		</delete>
+	</target>
+
+</project>
