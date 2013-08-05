@@ -1,0 +1,56 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="Robot Framework Test-Sampler" default="acceptance_tests" basedir=".">
+
+	<property name="src" location="src" />
+	<property name="classes" location="classes" />
+	<property name="lib" location="lib" />
+	<property name="reports" location="reports" />
+
+	<target name="all" depends="build" description="Run this target any time you change code. It will clean, then compile the source." />
+
+	<target name="build" depends="clean, compile" description="clean, then compile the source" />
+
+	<target name="compile" depends="init,-define-paths" description="compile the source (make)">
+		<javac srcdir="${src}" destdir="${classes}" classpathref="compile.classpath" debug="true" source="1.6" target="1.6" />
+	</target>
+
+	<target name="clean" description="delete everything in the classes directory">
+		<delete dir="${reports}" />
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+	</target>
+
+	<target name="acceptance_tests" depends="compile">
+		<mkdir dir="${reports}" />
+		<java classname="org.robotframework.RobotFramework" fork="true">
+			<classpath>
+				<path refid="compile.classpath" />
+				<pathelement location="${classes}" />
+			</classpath>
+			<arg value="run" />
+			<arg value="--outputdir=${reports}" />
+			<arg value="tests/*.txt" />
+		</java>
+	</target>
+		
+	<target name="-download-jars" if="ivy">
+		<ivy:retrieve />
+	</target>
+
+	<target name="-define-paths" depends="-download-jars">
+		<path id="compile.classpath">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="clean-deps" description="Delete all dependencies">
+		<delete>
+			<fileset dir="${basedir}/lib" includes="*.jar" />
+		</delete>
+	</target>
+
+</project>
