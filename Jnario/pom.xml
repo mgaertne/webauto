@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>TestSampler</groupId>
-  <artifactId>jnario</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>Jnario Test Sampler</name>
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>TestSampler</groupId>
+	<artifactId>jnario</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Jnario Test Sampler</name>
+	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -33,6 +34,7 @@
 					<execution>
 						<goals>
 							<goal>testCompile</goal>
+							<goal>xtend-test-install-debug-info</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -41,12 +43,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12</version>
-				
 				<configuration>
-					<testSourceDirectory>../xtend-gen</testSourceDirectory>
-					
 					<includes>
-						<include>**/*Spec.java</include>
+						<include>**/*Spec*.java</include>
 						<include>**/*Feature.java</include>
 						<include>**/*Test.java</include>
 						<include>**/*TestCase.java</include>
